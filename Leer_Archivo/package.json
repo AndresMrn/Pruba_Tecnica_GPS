@@ -1,0 +1,17 @@
+{
+  "name": "leer_archivo",
+  "version": "1.0.0",
+  "description": "leer_ARCHIVO",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "run": "run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "moment": "^2.30.1"
+  }
+}

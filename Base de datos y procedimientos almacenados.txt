@@ -1,0 +1,105 @@
+create database dbVentas;
+
+use dbVentas;
+
+create table region(
+ID_region int primary key not null,
+nombre_region varchar(20)
+);
+
+create table tipoCuenta(
+ID_cuenta int primary key not null,
+nombre_cuenta varchar(20),
+ID_region int
+);
+
+ALTER table tipoCuenta add constraint fk_ID_region foreign key (ID_region) references region(ID_region);
+
+create table vendedor(
+ID_vendedor int primary key not null,
+nombre_vendedor varchar(20),
+telefono int(11),
+descripcion varchar(100),
+valoracion int,
+ID_cuenta_fk int
+);
+
+ALTER table vendedor add constraint fk_ID_cuenta foreign key (ID_cuenta_fk) references tipoCuenta(ID_cuenta);
+
+create table producto (
+ID_producto int primary key not null,
+nombre_producto varchar(20)
+);
+
+create table venta (
+ID_venta int primary key not null,
+ID_producto int,
+cantidad int,
+ID_vendedor int
+);
+
+ALTER table venta add constraint fk_ID_producto foreign key (ID_producto) references producto(ID_producto);
+ALTER table venta add constraint fk_ID_vendedor foreign key (ID_vendedor) references vendedor(ID_vendedor);
+
+DELIMITER //
+
+CREATE PROCEDURE ObtenerVentasGlobales()
+BEGIN
+    SELECT 
+        SUM(v.cantidad) AS TotalVentas
+    FROM 
+        venta v
+    JOIN 
+        producto p ON v.ID_producto = p.ID_producto
+    JOIN 
+        vendedor ven ON v.ID_vendedor = ven.ID_vendedor
+    JOIN 
+        tipoCuenta tc ON ven.ID_cuenta_fk = tc.ID_cuenta
+    WHERE 
+        p.nombre_producto IN ('Hardware', 'Software')
+        AND tc.nombre_cuenta = 'Global';
+END;
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE ObtenerVentasPorRegion(IN RegionID INT)
+BEGIN
+    SELECT 
+        SUM(v.cantidad) AS TotalVentas
+    FROM 
+        venta v
+    JOIN 
+        vendedor ven ON v.ID_vendedor = ven.ID_vendedor
+    JOIN 
+        tipoCuenta tc ON ven.ID_cuenta_fk = tc.ID_cuenta
+    WHERE 
+        tc.ID_region = RegionID;
+END //
+
+DELIMITER ;
+
+DELIMITER // 
+CREATE PROCEDURE ObtenerVentasPorTipoProducto(In TipoProducto varchar(20))
+BEGIN 
+	SELECT
+		SUM(v.cantidad) AS TotalVentas
+    FROM 
+        venta v
+    JOIN 
+        producto p ON v.ID_producto = p.ID_producto
+    WHERE 
+        p.nombre_producto = @TipoProducto;
+END //
+
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
